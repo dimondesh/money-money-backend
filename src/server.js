@@ -1,0 +1,37 @@
+import express from 'express';
+import pino from 'pino-http';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+
+dotenv.config();
+
+const PORT = 3000;
+
+const app = express();
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Hello world!',
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on ${PORT}`);
+});
+app.use(
+  pino({
+    transport: {
+      target: 'pino-pretty',
+    },
+  }),
+);
+app.use(cors());
+
+export const startServer = () => {
+  const app = express();
+
+  app.use(express.json());
+  app.use(cors());
+  app.use(cookieParser());
+};
