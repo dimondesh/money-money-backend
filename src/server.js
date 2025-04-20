@@ -1,37 +1,20 @@
-import express from 'express';
-import pino from 'pino-http';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
+import app from './src/app.js';
 
 dotenv.config();
 
-const PORT = 3000;
+const PORT = process.env.PORT || 5000;
 
-const app = express();
-
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello world!',
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('MongoDB connected');
+    app.listen(PORT, () => {
+      console.log(` Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(' MongoDB connection error:', err.message);
+    process.exit(1);
   });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
-});
-app.use(
-  pino({
-    transport: {
-      target: 'pino-pretty',
-    },
-  }),
-);
-app.use(cors());
-
-export const startServer = () => {
-  const app = express();
-
-  app.use(express.json());
-  app.use(cors());
-  app.use(cookieParser());
-};
