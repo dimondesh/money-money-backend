@@ -1,13 +1,13 @@
 {
-  "name": "nodejs-hw-mongodb",
+  "name": "money-money-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.js",
-    "dev": "nodemon src/index",
-    "start": "node src/index",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "build": "npm run build-docs",
     "build-docs": "redocly bundle  docs/openari.yanl --ext json -o docs/swagger.json",
     "preview-docs": "redocly preview-docs"
