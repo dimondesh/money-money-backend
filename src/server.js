@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import app from './app.js';
 import { MONGO_URI, PORT } from './config/index.js';
 
+console.log('Connecting to MongoDB at:', MONGO_URI);
+
 mongoose
   .connect(MONGO_URI)
   .then(() => {
