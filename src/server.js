@@ -1,16 +1,13 @@
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import app from './app.js';
 import { MONGO_URI, PORT } from './config/index.js';
-
-dotenv.config();
 
 mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log(' MongoDB connected');
     app.listen(PORT, () => {
-      console.log(` Server running on http://localhost:${PORT}`);
+      console.log(` Server running at: http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
