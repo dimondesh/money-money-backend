@@ -1,0 +1,26 @@
+post:
+  security: []  # This endpoint is public, does not require authentication
+  tags:
+    - Auth
+  summary: Log in an existing user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/UserAuth.yaml
+  responses:
+    '200':
+      description: User logged in successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    '400':
+      $ref: '../../components/responses/ValidationError.yaml'
+    '401':
+      description: Invalid email or password

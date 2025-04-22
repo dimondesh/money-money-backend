@@ -1,0 +1,18 @@
+post:
+  security: []  # Цей ендпоінт не потребує авторизації (глобальний security вимикається)
+  tags:
+    - Auth
+  summary: Register a new user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/UserAuth.yaml
+  responses:
+    '201':
+      description: User registered successfully
+    '400':
+      $ref: '../../components/responses/ValidationError.yaml'
+    '409':
+      description: A user with this email already exists

@@ -1,0 +1,14 @@
+tags:
+  - User
+summary: Get information about the current user
+security:
+  - bearerAuth: []
+responses:
+  '200':
+    description: User data retrieved successfully
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/UserPublic.yaml
+  '401':
+    description: Unauthorized – missing or invalid token

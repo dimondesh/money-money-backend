@@ -1,0 +1,24 @@
+type: object
+required:
+  - type
+  - amount
+  - category
+  - date
+properties:
+  type:
+    type: string
+    enum: [income, expense]
+    example: expense
+  amount:
+    type: number
+    example: 250.75
+  category:
+    type: string
+    example: Food
+  date:
+    type: string
+    format: date
+    example: 2025-04-21
+  comment:
+    type: string
+    example: "Monthly rent"

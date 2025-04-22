@@ -1,0 +1,21 @@
+tags:
+  - Transactions
+summary: Get a transaction by ID
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: Transaction ID
+    schema:
+      type: string
+responses:
+  '200':
+    description: Transaction found
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/Transaction.yaml
+  '404':
+    description: Transaction not found
+  '401':
+    description: Unauthorized – missing or invalid token
