@@ -1,0 +1,79 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Money-money app 
+  description: This is a documentation of Money-money app
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Auth
+    description: Registration, login and logout of users
+  - name: User
+    description: Retrieve current user information
+  - name: Categories
+    description: List of income and expense categories
+  - name: Transactions
+    description: Operations with user transactions
+  - name: Summary
+    description: Financial summary of user transactions
+
+servers:
+  - url: http://localhost:3000
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    $ref: ../swagger/paths/auth/register.yaml
+  /auth/login:
+    $ref: ../swagger/paths/auth/login.yaml
+  /auth/logout:
+    $ref: ../swagger/paths/auth/logout.yaml
+
+  /user:
+    get:
+      $ref: ../swagger/paths/user/get.yaml
+
+  /categories:
+    get:
+      $ref: ../swagger/paths/categories/get.yaml
+
+  /transactions:
+    post:
+      $ref: ../swagger/paths/transactions/post.yaml
+    get:
+      $ref: ../swagger/paths/transactions/get.yaml
+
+  /transactions/{id}:
+    get:
+      $ref: ../swagger/paths/transactions/{id}/get.yaml
+    patch:
+      $ref: ../swagger/paths/transactions/{id}/patch.yaml
+    delete:
+      $ref: ../swagger/paths/transactions/{id}/delete.yaml
+
+  /summary:
+    get:
+      $ref: ../swagger/paths/summary/get.yaml
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserAuth:
+      $ref: ../swagger/components/schemas/UserAuth.yaml
+    UserPublic:
+      $ref: ../swagger/components/schemas/UserPublic.yaml
+    Transaction:
+      $ref: ../swagger/components/schemas/Transaction.yaml
+
+  responses:
+    ValidationError:
+      $ref: ../swagger/components/responses/ValidationError.yaml

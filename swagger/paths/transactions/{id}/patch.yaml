@@ -1,0 +1,29 @@
+tags:
+  - Transactions
+summary: Update a transaction by ID
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: Transaction ID
+    schema:
+      type: string
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: '../../../components/schemas/Transaction.yaml'
+responses:
+  '200':
+    description: Transaction updated successfully
+    content:
+      application/json:
+        schema:
+          $ref: '../../../components/schemas/Transaction.yaml'
+  '400':
+    $ref: ../../../components/responses/ValidationError.yaml
+  '401':
+    description: Unauthorized – missing or invalid token
+  '404':
+    description: Transaction not found

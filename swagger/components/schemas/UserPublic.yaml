@@ -1,0 +1,12 @@
+type: object
+required:
+  - name
+  - email
+properties:
+  name:
+    type: string
+    example: Mark Dorn
+  email:
+    type: string
+    format: email
+    example: mark@example.com

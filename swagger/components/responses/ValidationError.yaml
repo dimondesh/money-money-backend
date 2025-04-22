@@ -1,0 +1,10 @@
+description: Invalid input data
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Invalid input data"
+

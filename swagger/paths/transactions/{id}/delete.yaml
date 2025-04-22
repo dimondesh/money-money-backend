@@ -1,0 +1,17 @@
+tags:
+  - Transactions
+summary: Delete a transaction by ID
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: Transaction ID
+    schema:
+      type: string
+responses:
+  '200':
+    description: Transaction deleted successfully
+  '401':
+    description: Unauthorized – missing or invalid token
+  '404':
+    description: Transaction not found
