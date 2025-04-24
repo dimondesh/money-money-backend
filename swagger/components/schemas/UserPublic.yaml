@@ -1,12 +1,23 @@
 type: object
-required:
-  - name
-  - email
 properties:
-  name:
+  _id:
     type: string
-    example: Mark Dorn
+    example: "664fb8d7a43d13e0123a4567"
+  userName:
+    type: string
+    example: "Mark Dorn"
   email:
     type: string
     format: email
-    example: mark@example.com
+    example: "mark@example.com"
+  balance:
+    type: number
+    example: 1200
+required:
+  - _id
+  - userName
+  - email
+  - balance
+
+
+

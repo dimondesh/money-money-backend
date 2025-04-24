@@ -1,14 +1,17 @@
 tags:
   - User
-summary: Get information about the current user
+summary: Get current user
+description: Returns public information about the currently authenticated user.
 security:
   - bearerAuth: []
 responses:
   '200':
-    description: User data retrieved successfully
+    description: Successfully retrieved user data
     content:
       application/json:
         schema:
-          $ref: ../../components/schemas/UserPublic.yaml
+          $ref: '../../components/schemas/UserPublic.yaml'
   '401':
     description: Unauthorized – missing or invalid token
+  '500':
+    description: Server error

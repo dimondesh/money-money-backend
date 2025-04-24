@@ -4,8 +4,14 @@ import User from "../models/User.js";
 import {SessionsCollection} from "../models/session.js";
 import crypto from "node:crypto";
 
+
+import User from '../models/User.js';
+import { SessionsCollection } from '../models/session.js';
+import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
+
 import dotenv from 'dotenv';
 dotenv.config({ path: './.env' });
+
 
 
 
@@ -47,10 +53,14 @@ export async function loginUser(email, password) {
 
   return SessionsCollection.create({
     userId: user._id,
-    accessToken: crypto.randomBytes(30).toString("base64"),
-    refreshToken: crypto.randomBytes(30).toString("base64"),
-    accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
-    refreshTokenValidUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
+
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
+
+    
+
   });
 }
 
