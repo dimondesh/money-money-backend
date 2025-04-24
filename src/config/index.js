@@ -13,5 +13,3 @@ export { MONGO_URI, PORT };
 
 export const FIFTEEN_MINUTES = 15 * 60 * 1000;
 export const ONE_DAY = 24 * 60 * 60 * 1000;
-
-export const JWT_SECRET = process.env.JWT_SECRET;
