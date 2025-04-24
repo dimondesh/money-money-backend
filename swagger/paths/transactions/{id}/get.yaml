@@ -1,11 +1,14 @@
 tags:
   - Transactions
 summary: Get a transaction by ID
+description: Returns a single transaction by its ID for the currently authenticated user.
+security:
+  - bearerAuth: []
 parameters:
   - name: id
     in: path
     required: true
-    description: Transaction ID
+    description: ID of the transaction to retrieve
     schema:
       type: string
 responses:
@@ -14,8 +17,8 @@ responses:
     content:
       application/json:
         schema:
-          $ref: ../../../components/schemas/Transaction.yaml
-  '404':
-    description: Transaction not found
+          $ref: '../../../components/schemas/Transaction.yaml'
   '401':
     description: Unauthorized – missing or invalid token
+  '404':
+    description: Transaction not found

@@ -1,16 +1,19 @@
 tags:
   - Transactions
-summary: Delete a transaction by ID
+summary: Delete a transaction
+description: Deletes a transaction by ID for the currently authenticated user.
+security:
+  - bearerAuth: []
 parameters:
   - name: id
     in: path
     required: true
-    description: Transaction ID
+    description: ID of the transaction to delete
     schema:
       type: string
 responses:
-  '200':
-    description: Transaction deleted successfully
+  '204':
+    description: Transaction deleted successfully (No Content)
   '401':
     description: Unauthorized – missing or invalid token
   '404':

@@ -6,8 +6,8 @@ import pino from 'pino-http';
 
 import authRoutes from './routes/auth.routes.js';
 import transactionsRoutes from './routes/transactions.routes.js';
-import statisticsRoutes from './routes/statistics.routes.js';
-import currencyRoutes from './routes/currency.routes.js';
+//import statisticsRoutes from './routes/statistics.routes.js';
+//import currencyRoutes from './routes/currency.routes.js';
 
 dotenv.config();
 
@@ -46,7 +46,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionsRoutes);
-app.use('/api/statistics', statisticsRoutes);
-app.use('/api/currency', currencyRoutes);
+//app.use('/api/statistics', statisticsRoutes);
+//app.use('/api/currency', currencyRoutes);
 
 export default app;
