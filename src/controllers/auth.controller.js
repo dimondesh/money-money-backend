@@ -1,55 +1,55 @@
-import { registerUser, loginUser } from '../services/auth.service.js';
 
-export const registerUserController = async (req, res) => {
-  try {
-    const user = await registerUser(req.body);
 
-    res.status(201).json({
-      status: 201,
-      message: 'Successfully registered a user!',
-      data: {
-        user: user.user,
-        token: user.token,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      message: 'Error! Cannot register user',
-      error: err.message,
-    });
-  }
+
+import { loginUser, registerUser, logoutUser, } from "../services/auth.service.js";
+
+
+export async function registerController(req, res) {
+  const user = await registerUser(req.body);
+
+  res.status(201).json({
+    status: 201,
+    message: "User created successfully",
+    data: user,
+  });
+}
+
+export async function loginController(req, res) {
+  const session = await loginUser(req.body.email, req.body.password);
+
+  res.cookie("sessionId", session._id, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+
+  res.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+  
+
+  res.status(200).json({
+    status: 200,
+    message: "User logged in successfully",
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
 };
 
-export const loginUserController = async (req, res) => {
-  try {
-    const session = await loginUser(req.body);
-
-    res.json({
-      status: 200,
-      message: 'Successfully logged in!',
-      data: {
-        user: session.user,
-        token: session.token,
-      },
-    });
-  } catch (err) {
-    res.status(401).json({
-      status: 401,
-      message: 'Invalid credentials',
-      error: err.message,
-    });
+export async function logoutController(req, res) {
+  const { sessionId, refreshToken } = req.cookies;
+  if (typeof sessionId === "string" && typeof refreshToken === "string") {
+    await logoutUser(sessionId, refreshToken);
   }
-};
 
-export const logoutUserController = async (req, res) => {
-  try {
-    return res.status(200).json({ message: 'Successfully logged out' });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      message: 'Error logging out',
-      error: err.message,
-    });
-  }
-};
+  res.clearCookie("sessionId");
+  res.clearCookie("refreshToken");
+  res.status(204).end();
+
+
+}
+
+
+
+
