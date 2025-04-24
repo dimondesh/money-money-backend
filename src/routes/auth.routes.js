@@ -9,9 +9,10 @@ import { validateBody } from '../middlewares/validateBody.js';
 import { registerUserSchema, loginUserSchema } from '../schemas/userSchemas.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
-const router = express.Router();
+const authRouter = express.Router();
 
-router.post('/login', login);
+authRouter.post('/login', login);
+
 
 router.post(
   '/sign-up',
@@ -28,3 +29,6 @@ router.post(
 router.post('/sign-out', ctrlWrapper(logoutUserController));
 
 export default router;
+
+export default authRouter;
+

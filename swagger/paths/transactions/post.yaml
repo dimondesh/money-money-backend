@@ -1,0 +1,16 @@
+tags:
+  - Transactions
+summary: Create a new transaction
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: '../../components/schemas/Transaction.yaml'
+responses:
+  '201':
+    description: Transaction created successfully
+  '400':
+    $ref: '../../components/responses/ValidationError.yaml'
+  '401':
+    description: Unauthorized – missing or invalid token

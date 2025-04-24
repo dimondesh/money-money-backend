@@ -1,22 +1,55 @@
-import * as authService from '../services/auth.service.js';
+import { registerUser, loginUser } from '../services/auth.service.js';
 
-export const login = async (req, res) => {
+export const registerUserController = async (req, res) => {
   try {
-    const sessionData = await authService.loginUser(req.body);
+    const user = await registerUser(req.body);
 
-    res.cookie('refreshToken', sessionData.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    res.status(200).json({
-      user: sessionData.user,
-      accessToken: sessionData.accessToken,
-      accessTokenExpires: sessionData.accessTokenExpires,
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully registered a user!',
+      data: {
+        user: user.user,
+        token: user.token,
+      },
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    res.status(500).json({
+      status: 500,
+      message: 'Error! Cannot register user',
+      error: err.message,
+    });
+  }
+};
+
+export const loginUserController = async (req, res) => {
+  try {
+    const session = await loginUser(req.body);
+
+    res.json({
+      status: 200,
+      message: 'Successfully logged in!',
+      data: {
+        user: session.user,
+        token: session.token,
+      },
+    });
+  } catch (err) {
+    res.status(401).json({
+      status: 401,
+      message: 'Invalid credentials',
+      error: err.message,
+    });
+  }
+};
+
+export const logoutUserController = async (req, res) => {
+  try {
+    return res.status(200).json({ message: 'Successfully logged out' });
+  } catch (err) {
+    res.status(500).json({
+      status: 500,
+      message: 'Error logging out',
+      error: err.message,
+    });
   }
 };
