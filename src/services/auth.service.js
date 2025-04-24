@@ -1,36 +1,53 @@
 import bcrypt from 'bcrypt';
-import { randomBytes } from 'crypto';
+// import { randomBytes } from 'crypto';
 import createHttpError from 'http-errors';
 
 import User from '../models/User.js';
-import { SessionsCollection } from '../models/session.js';
-import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
+// import { SessionsCollection } from '../models/session.js';
+// import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
+import { generateToken } from '../utils/token.js';
 
-export const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email });
-  if (!user) throw createHttpError(404, 'User not found');
+export const registerUser = async (payload) => {
+  const existingUser = await User.findOne({ email: payload.email });
+  if (existingUser) throw createHttpError(409, 'Email in use');
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw createHttpError(401, 'Unauthorized');
+  const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
-  await SessionsCollection.deleteOne({ userId: user._id });
-
-  const accessToken = randomBytes(30).toString('base64');
-  const refreshToken = randomBytes(30).toString('base64');
-
-  const session = await SessionsCollection.create({
-    userId: user._id,
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
+  const newUser = await User.create({
+    ...payload,
+    password: encryptedPassword,
+    balance: 0,
   });
 
+  const token = generateToken(newUser._id.toString());
+
   return {
-    user,
-    accessToken: session.accessToken,
-    refreshToken: session.refreshToken,
-    accessTokenExpires: session.accessTokenValidUntil,
-    refreshTokenExpires: session.refreshTokenValidUntil,
+    user: {
+      id: newUser._id.toString(),
+      name: newUser.name,
+      email: newUser.email,
+      balance: newUser.balance,
+    },
+    token,
+  };
+};
+
+export const loginUser = async (payload) => {
+  const user = await User.findOne({ email: payload.email });
+  if (!user) throw createHttpError(401, 'User not found');
+
+  const isEqual = await bcrypt.compare(payload.password, user.password);
+  if (!isEqual) throw createHttpError(401, 'Invalid credentials');
+
+  const token = generateToken(user._id.toString());
+
+  return {
+    user: {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      balance: user.balance,
+    },
+    token,
   };
 };
