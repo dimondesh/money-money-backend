@@ -1,8 +1,13 @@
 import express from 'express';
-import { login } from '../controllers/auth.controller.js';
+import {ctrlWrapper} from '../utils/ctrlWrapper.js';
 
-const authRouter = express.Router();
+import { registerController, loginController, logoutController } from '../controllers/auth.controller.js';
 
-authRouter.post('/login', login);
+const router = express.Router();
+const jsonParser = express.json();
 
-export default authRouter;
+router.post("/register", jsonParser, ctrlWrapper(registerController));
+router.post("/login", jsonParser, ctrlWrapper(loginController));
+router.post("/logout", jsonParser, ctrlWrapper(logoutController));
+
+export default router;

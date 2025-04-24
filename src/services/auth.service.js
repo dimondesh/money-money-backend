@@ -1,53 +1,68 @@
-import bcrypt from 'bcrypt';
-// import { randomBytes } from 'crypto';
-import createHttpError from 'http-errors';
+import createHttpError from "http-errors";
+import bcrypt from "bcrypt";
+import User from "../models/User.js";
+import {SessionsCollection} from "../models/session.js";
+import crypto from "node:crypto";
 
-import User from '../models/User.js';
-// import { SessionsCollection } from '../models/session.js';
-// import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
-import { generateToken } from '../utils/token.js';
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
 
-export const registerUser = async (payload) => {
-  const existingUser = await User.findOne({ email: payload.email });
-  if (existingUser) throw createHttpError(409, 'Email in use');
 
-  const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
-  const newUser = await User.create({
-    ...payload,
-    password: encryptedPassword,
-    balance: 0,
-  });
 
-  const token = generateToken(newUser._id.toString());
-
-  return {
-    user: {
-      id: newUser._id.toString(),
-      name: newUser.name,
-      email: newUser.email,
-      balance: newUser.balance,
-    },
-    token,
-  };
-};
-
-export const loginUser = async (payload) => {
+export async function registerUser(payload) {
   const user = await User.findOne({ email: payload.email });
-  if (!user) throw createHttpError(401, 'User not found');
+  if (user !== null) {
+    throw createHttpError.Conflict("Email in use");
+  }
+  payload.password = await bcrypt.hash(payload.password, 10,);
 
-  const isEqual = await bcrypt.compare(payload.password, user.password);
-  if (!isEqual) throw createHttpError(401, 'Invalid credentials');
 
-  const token = generateToken(user._id.toString());
+  return User.create(payload);
+}
 
-  return {
-    user: {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      balance: user.balance,
-    },
-    token,
-  };
-};
+
+
+
+
+
+
+export async function loginUser(email, password) {
+  const user = await User.findOne({ email });
+  
+
+  if (!user) {
+    throw createHttpError.Unauthorized("Invalid login or password");
+
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  console.log(isMatch);
+
+  if (!isMatch) {
+    throw createHttpError.Unauthorized("Invalid login or password");
+  }
+
+  await SessionsCollection.deleteOne({ user: user._id });
+
+  return SessionsCollection.create({
+    userId: user._id,
+    accessToken: crypto.randomBytes(30).toString("base64"),
+    refreshToken: crypto.randomBytes(30).toString("base64"),
+    accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  });
+}
+
+
+
+
+
+
+export async function logoutUser(sessionId, refreshToken) {
+  const session = await SessionsCollection.deleteOne({ _id: sessionId, refreshToken });
+  if (!session) {
+    throw createHttpError.Unauthorized("Invalid session or refresh token");
+  }
+  return undefined;
+}
