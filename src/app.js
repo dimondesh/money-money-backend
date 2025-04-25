@@ -5,22 +5,17 @@ import cookieParser from 'cookie-parser';
 import pino from 'pino-http';
 import  errorHandler  from './middlewares/errorHandler.js';
 import  notFoundHandler  from './middlewares/notFoundHandler.js';
-
 import authRoutes from './routes/auth.routes.js';
 import transactionsRoutes from './routes/transactions.routes.js';
-
-
-
- import statisticsRoutes from './routes/statistics.routes.js';
+import userRouter from './routes/user.routes.js';
+import statisticsRoutes from './routes/statistics.routes.js';
 import currencyRoutes from './routes/currency.routes.js';
-
-
-dotenv.config();
-
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,13 +36,11 @@ app.use(
 );
 
 
-
-
-
-
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    // Используем переменную из .env или ваш порт Vite по умолчанию
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    // credentials: true оставляем, если используете cookie для сессий
     credentials: true,
   }),
 );
@@ -58,7 +51,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionsRoutes);
 
-
+app.use('/api/users', userRouter);
 
 app.use('/api/statistics', statisticsRoutes);
 app.use('/api/currency', currencyRoutes);
