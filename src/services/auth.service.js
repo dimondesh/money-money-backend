@@ -1,77 +1,77 @@
+// В файле: src/services/auth.service.js
+
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+import { SessionsCollection } from "../models/session.js";
 import User from "../models/User.js";
-import {SessionsCollection} from "../models/session.js";
-import crypto from "node:crypto";
+// import crypto from "node:crypto"; // Не используется
 
-
-import User from '../models/User.js';
-import { SessionsCollection } from '../models/session.js';
-import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
+// Импортируем константы, добавляя .js в конце пути
+import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js'; // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
 
 import dotenv from 'dotenv';
-dotenv.config({ path: './.env' });
-
-
-
-
+// Вызов dotenv.config() лучше оставить только в точке входа (server.js/app.js)
+// dotenv.config({ path: './.env' });
 
 export async function registerUser(payload) {
   const user = await User.findOne({ email: payload.email });
   if (user !== null) {
     throw createHttpError.Conflict("Email in use");
   }
-  payload.password = await bcrypt.hash(payload.password, 10,);
-
+  payload.password = await bcrypt.hash(payload.password, 10);
 
   return User.create(payload);
 }
 
-
-
-
-
-
-
 export async function loginUser(email, password) {
   const user = await User.findOne({ email });
-  
 
   if (!user) {
     throw createHttpError.Unauthorized("Invalid login or password");
-
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
-  console.log(isMatch);
 
   if (!isMatch) {
     throw createHttpError.Unauthorized("Invalid login or password");
   }
 
-  await SessionsCollection.deleteOne({ user: user._id });
+  const payload = { userId: user._id };
 
-  return SessionsCollection.create({
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in .env');
+  }
+  const refreshSecret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+
+  const accessToken = jwt.sign(
+    payload,
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+  const refreshToken = jwt.sign(
+    payload,
+    refreshSecret,
+    { expiresIn: '7d' }
+  );
+
+  await SessionsCollection.deleteOne({ userId: user._id });
+
+  const newSession = await SessionsCollection.create({
     userId: user._id,
-
-    accessToken,
-    refreshToken,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
     accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
-
-    
-
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY * 7),
   });
+
+  return newSession;
 }
-
-
-
-
-
 
 export async function logoutUser(sessionId, refreshToken) {
   const session = await SessionsCollection.deleteOne({ _id: sessionId, refreshToken });
-  if (!session) {
+  if (session.deletedCount === 0) {
     throw createHttpError.Unauthorized("Invalid session or refresh token");
   }
   return undefined;
