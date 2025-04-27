@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Money-money app 
+  title: Money-money app
   description: This is a documentation of Money-money app
   license:
     name: Apache 2.0
@@ -20,7 +20,7 @@ tags:
     description: Financial summary of user transactions
 
 servers:
-  - url: http://localhost:3000
+  - url: 'https://money-money-backend.onrender.com'
 
 security:
   - bearerAuth: []
