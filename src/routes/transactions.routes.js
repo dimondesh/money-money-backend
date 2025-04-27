@@ -8,15 +8,16 @@ import {
 } from '../controllers/transactions.controller.js';
 
 import auth from '../middlewares/auth.middleware.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const router = express.Router();
 
 router.use(auth);
 
-router.post('/', createTransaction);
-router.get('/', getAllTransactions);
-router.get('/:id', getTransactionById);
-router.patch('/:id', updateTransaction);
-router.delete('/:id', deleteTransaction);
+router.post('/', ctrlWrapper(createTransaction));
+router.get('/', ctrlWrapper(getAllTransactions));
+router.get('/:id', ctrlWrapper(getTransactionById));
+router.patch('/:id', ctrlWrapper(updateTransaction));
+router.delete('/:id', ctrlWrapper(deleteTransaction));
 
 export default router;
