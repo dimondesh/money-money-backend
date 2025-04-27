@@ -10,6 +10,7 @@ import User from "../models/User.js";
 // Импортируем константы, добавляя .js в конце пути
 import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js'; // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
 
+// eslint-disable-next-line no-unused-vars
 import dotenv from 'dotenv';
 // Вызов dotenv.config() лучше оставить только в точке входа (server.js/app.js)
 // dotenv.config({ path: './.env' });
