@@ -1,11 +1,14 @@
-// Файл: src/routes/statistics.routes.js
-import { Router } from 'express';
+import express from 'express';
+import {
+  getUserStatistics
+} from '../controllers/statistics.controller.js';
 
+import auth from '../middlewares/auth.middleware.js';
 
-const statisticsRouter = Router();
+const router = express.Router();
 
-// Здесь вы позже сможете добавить обработчики для маршрутов статистики
-// Например:
-// statisticsRouter.get('/', getStatisticsController);
+router.use(auth); 
 
-export default statisticsRouter;
+router.get('/', getUserStatistics); // отримання статистики
+
+export default router;
