@@ -5,11 +5,6 @@ import cookieParser from 'cookie-parser';
 import pino from 'pino-http';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
-// import authRoutes from './routes/auth.routes.js';
-// import transactionsRoutes from './routes/transactions.routes.js';
-// import userRouter from './routes/user.routes.js';
-// import statisticsRoutes from './routes/statistics.routes.js';
-// import currencyRoutes from './routes/currency.routes.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
@@ -50,13 +45,6 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api', router);
-// app.use('/api/transactions', transactionsRoutes);
-
-// app.use('/api/users', userRouter);
-
-// app.use('/api/statistics', statisticsRoutes);
-
-// app.use('/api/currency', currencyRoutes);
 
 app.use(notFoundHandler);
 

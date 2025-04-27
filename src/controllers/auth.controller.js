@@ -1,15 +1,15 @@
-
-
-
-import { loginUser, registerUser, logoutUser, } from "../services/auth.service.js";
-
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+} from '../services/auth.service.js';
 
 export async function registerController(req, res) {
   const user = await registerUser(req.body);
 
   res.status(201).json({
     status: 201,
-    message: "User created successfully",
+    message: 'User created successfully',
     data: user,
   });
 }
@@ -17,39 +17,32 @@ export async function registerController(req, res) {
 export async function loginController(req, res) {
   const session = await loginUser(req.body.email, req.body.password);
 
-  res.cookie("sessionId", session._id, {
+  res.cookie('sessionId', session._id, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
   });
 
-  res.cookie("refreshToken", session.refreshToken, {
+  res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
   });
-  
 
   res.status(200).json({
     status: 200,
-    message: "User logged in successfully",
+    message: 'User logged in successfully',
     data: {
       accessToken: session.accessToken,
     },
   });
-};
+}
 
 export async function logoutController(req, res) {
   const { sessionId, refreshToken } = req.cookies;
-  if (typeof sessionId === "string" && typeof refreshToken === "string") {
+  if (typeof sessionId === 'string' && typeof refreshToken === 'string') {
     await logoutUser(sessionId, refreshToken);
   }
 
-  res.clearCookie("sessionId");
-  res.clearCookie("refreshToken");
+  res.clearCookie('sessionId');
+  res.clearCookie('refreshToken');
   res.status(204).end();
-
-
 }
-
-
-
-
