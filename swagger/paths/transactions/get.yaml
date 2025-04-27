@@ -14,6 +14,6 @@ responses:
           items:
             $ref: '../../components/schemas/Transaction.yaml'
   '401':
-    description: Unauthorized – missing or invalid token
+    description: '../../components/responses/401.yaml'
   '500':
-    description: Server error
+    description: '../../components/responses/500.yaml'

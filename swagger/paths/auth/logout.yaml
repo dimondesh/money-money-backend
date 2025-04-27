@@ -3,15 +3,9 @@ get:
     - Auth
   summary: Log out the current user
   responses:
-    '200':
-      description: User logged out successfully
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Logged out successfully
+    '204':
+      description: 'No content'
     '401':
-      description: Unauthorized – missing or invalid token
+      $ref: '../../components/responses/401.yaml'
+    '500':
+      $ref: '../../components/responses/500.yaml'

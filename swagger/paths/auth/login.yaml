@@ -1,5 +1,5 @@
 post:
-  security: []  # This endpoint is public, does not require authentication
+  security: [] # This endpoint is public, does not require authentication
   tags:
     - Auth
   summary: Log in an existing user
@@ -8,19 +8,70 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../../components/schemas/UserAuth.yaml
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              example: Antonio123@gmail.com
+            password:
+              type: string
+              format: password
+              example: 123456789
   responses:
     '200':
-      description: User logged in successfully
+      description: Successfully logged in user
       content:
         application/json:
           schema:
             type: object
+            required:
+              - status
+              - message
+              - data
             properties:
-              token:
+              status:
+                type: integer
+                example: 200
+              message:
                 type: string
-                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-    '400':
-      $ref: '../../components/responses/ValidationError.yaml'
+                example: Successfully logged in!
+              data:
+                type: object
+                required:
+                  - user
+                  - token
+                properties:
+                  user:
+                    type: object
+                    required:
+                      - id
+                      - name
+                      - email
+                      - balance
+                    properties:
+                      id:
+                        type: string
+                        example: 8fa102c87d6e43d3a6e52bda91da45ea
+                      name:
+                        type: string
+                        example: Antonio Banderas
+                      email:
+                        type: string
+                        example: Antonio123@gmail.com
+                      balance:
+                        type: number
+                        example: 0
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
     '401':
-      description: Invalid email or password
+      $ref: '../../components/responses/401.yaml'
+    '404':
+      $ref: '../../components/responses/404.yaml'
+    '500':
+      $ref: '../../components/responses/500.yaml'

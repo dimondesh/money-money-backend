@@ -1,14 +1,28 @@
 type: object
 required:
+  - name
   - email
   - password
 properties:
+  _id:
+    description: User's id
+    type: string
+    example: 4ab91bd209434427aed468340dcd48d6
+  name:
+    description: User's name
+    type: string
+    example: 'Antonio Banderas'
   email:
+    description: User's email
     type: string
     format: email
     example: user@example.com
   password:
+    description: User's password
     type: string
     minLength: 6
     maxLength: 12
     example: StepDake123
+  balance:
+    type: number
+    default: 0,
