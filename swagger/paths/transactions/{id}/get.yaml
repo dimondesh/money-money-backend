@@ -19,6 +19,6 @@ responses:
         schema:
           $ref: '../../../components/schemas/Transaction.yaml'
   '401':
-    description: Unauthorized – missing or invalid token
+    description: '../../../components/responses/401.yaml'
   '404':
-    description: Transaction not found
+    description: '../../../components/responses/404.yaml'
