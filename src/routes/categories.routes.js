@@ -5,6 +5,6 @@ import { getCategoriesController } from '../controllers/categories.controller.js
 
 const categoriesRouter = Router();
 
-categoriesRouter.get('/', auth, ctrlWrapper(getCategoriesController));
+categoriesRouter.get('/', ctrlWrapper(getCategoriesController));
 
 export default categoriesRouter;
