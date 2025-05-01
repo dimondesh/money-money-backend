@@ -50,24 +50,103 @@
         ],
         "summary": "Register a new user",
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserAuth"
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Antonio Banderas"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "Antonio123@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "123456789"
+                  },
+                  "balance": {
+                    "type": "number",
+                    "example": "0"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User registered successfully"
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "User registration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": "201"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully registered a user!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserAuth"
+                    }
+                  }
+                }
+              }
+            }
           },
           "409": {
-            "description": "A user with this email already exists"
+            "description": "Conflict Error",
+            "content": {
+              "application\\json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 409
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ConflictError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "A user with this email already exists"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -84,33 +163,101 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserAuth"
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "Antonio123@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": 123456789
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "User logged in successfully",
+            "description": "Successfully logged in user",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
                   "properties": {
-                    "token": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
                       "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      "example": "Successfully logged in!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "user",
+                        "token"
+                      ],
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "name",
+                            "email",
+                            "balance"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "8fa102c87d6e43d3a6e52bda91da45ea"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Antonio Banderas"
+                            },
+                            "email": {
+                              "type": "string",
+                              "example": "Antonio123@gmail.com"
+                            },
+                            "balance": {
+                              "type": "number",
+                              "example": 0
+                            },
+                            "token": {
+                              "type": "string",
+                              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
           "401": {
-            "description": "Invalid email or password"
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -122,24 +269,14 @@
         ],
         "summary": "Log out the current user",
         "responses": {
-          "200": {
-            "description": "User logged out successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Logged out successfully"
-                    }
-                  }
-                }
-              }
-            }
+          "204": {
+            "description": "No content"
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -225,7 +362,44 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Transaction"
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "income",
+                      "expense"
+                    ],
+                    "description": "Type of the transaction (income or expense)",
+                    "example": "EXPENSE"
+                  },
+                  "_id": {
+                    "type": "string",
+                    "example": "c143130f-7d1e-4011-90a4-54766d4e308e"
+                  },
+                  "sum": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Transaction amount (must be non-negative)",
+                    "example": 25.5
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-04-26T10:00:00Z"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "example": "Lunch at a cafe"
+                  }
+                },
+                "required": [
+                  "type",
+                  "_id",
+                  "sum",
+                  "date",
+                  "comment"
+                ]
               }
             }
           }
@@ -245,7 +419,7 @@
             "$ref": "#/components/responses/ValidationError"
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "description": "../../components/responses/401.yaml"
           }
         }
       },
@@ -275,10 +449,10 @@
             }
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "description": "../../components/responses/401.yaml"
           },
           "500": {
-            "description": "Server error"
+            "description": "../../components/responses/500.yaml"
           }
         }
       }
@@ -318,10 +492,10 @@
             }
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "description": "../../../components/responses/401.yaml"
           },
           "404": {
-            "description": "Transaction not found"
+            "description": "../../../components/responses/404.yaml"
           }
         }
       },
@@ -375,7 +549,7 @@
             "description": "Unauthorized – missing or invalid token"
           },
           "404": {
-            "description": "Transaction not found"
+            "description": "../../../components/responses/404.yaml"
           }
         }
       },
@@ -406,10 +580,10 @@
             "description": "Transaction deleted successfully (No Content)"
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "description": "../../components/responses/401.yaml"
           },
           "404": {
-            "description": "Transaction not found"
+            "description": "../../components/responses/404.yaml"
           }
         }
       }
@@ -507,20 +681,37 @@
       "UserAuth": {
         "type": "object",
         "required": [
+          "name",
           "email",
           "password"
         ],
         "properties": {
+          "_id": {
+            "description": "User's id",
+            "type": "string",
+            "example": "4ab91bd209434427aed468340dcd48d6"
+          },
+          "name": {
+            "description": "User's name",
+            "type": "string",
+            "example": "Antonio Banderas"
+          },
           "email": {
+            "description": "User's email",
             "type": "string",
             "format": "email",
             "example": "user@example.com"
           },
           "password": {
+            "description": "User's password",
             "type": "string",
             "minLength": 6,
             "maxLength": 12,
             "example": "StepDake123"
+          },
+          "balance": {
+            "type": "number",
+            "default": "0,"
           }
         }
       },
@@ -587,17 +778,136 @@
             "type": "string",
             "format": "date-time",
             "example": "2025-05-02T12:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-05-02T12:00:00.000Z"
           }
         },
         "required": [
+          "_id",
           "userId",
           "type",
           "category",
-          "sum"
+          "sum",
+          "createdAt",
+          "updatedAt"
         ]
       }
     },
     "responses": {
+      "401": {
+        "description": "Unauthorized error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "UnauthorizedError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found Error",
+        "content": {
+          "application\\json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "NotFoundError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application\\json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Something went wrong"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "ValidationError": {
         "description": "Invalid input data",
         "content": {

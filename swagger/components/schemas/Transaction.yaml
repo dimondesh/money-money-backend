@@ -2,30 +2,36 @@ type: object
 properties:
   _id:
     type: string
-    example: "6651234567abcdef01234567"
+    example: '6651234567abcdef01234567'
   userId:
     type: string
-    example: "664fb8d7a43d13e0123a4567"
+    example: '664fb8d7a43d13e0123a4567'
   type:
     type: string
     enum: [income, expense]
-    example: "expense"
+    example: 'expense'
   category:
     type: string
-    example: "food"
+    example: 'food'
   sum:
     type: number
     example: 250
   comment:
     type: string
-    example: "Lunch at a cafe"
+    example: 'Lunch at a cafe'
   createdAt:
     type: string
     format: date-time
-    example: "2025-05-02T12:00:00.000Z"
+    example: '2025-05-02T12:00:00.000Z'
+  updatedAt:
+    type: string
+    format: date-time
+    example: '2025-05-02T12:00:00.000Z'
 required:
+  - _id
   - userId
   - type
   - category
   - sum
-
+  - createdAt
+  - updatedAt
