@@ -3,8 +3,16 @@ import createHttpError from 'http-errors';
 
 // Список категорій витрат
 const expenseCategories = [
-  "Main expenses", "Products", "Car", "Self care", "Child care", 
-  "Household products", "Education", "Leisure", "Other expenses", "Entertainment"
+  'Main expenses',
+  'Products',
+  'Car',
+  'Self care',
+  'Child care',
+  'Household products',
+  'Education',
+  'Leisure',
+  'Other expenses',
+  'Entertainment',
 ];
 
 // Отримати статистику витрат і надходжень
@@ -43,7 +51,7 @@ export const getStatisticsService = async (userId, month, year) => {
   // Пошук всіх транзакцій вказаного користувача за місяць
   const transactions = await Transaction.find({
     userId,
-    date: { $gte: startDate, $lt: endDate }
+    date: { $gte: startDate, $lt: endDate },
   });
 
   if (!transactions || transactions.length === 0) {
@@ -52,19 +60,19 @@ export const getStatisticsService = async (userId, month, year) => {
 
   let income = 0;
   let totalExpenses = 0;
-  let expenses = [];
+  let expenses = {};
 
   // Обчислюємо суму доходів і витрат по категоріях
-  transactions.forEach(transaction => {
+  transactions.forEach((transaction) => {
     if (transaction.type === 'income') {
       income += transaction.sum;
     } else if (transaction.type === 'expense') {
-      if (expenseCategories.includes(transaction.category)) {
-        if (!expenses[transaction.category]) {
-          expenses[transaction.category] = 0;
+      if (expenseCategories.includes(transaction.categoryId)) {
+        if (!expenses[transaction.categoryId]) {
+          expenses[transaction.categoryId] = 0;
         }
-        expenses[transaction.category] += transaction.sum;
-        totalExpenses += transaction.sum;  // Загальна сума витрат
+        expenses[transaction.categoryId] += transaction.sum;
+        totalExpenses += transaction.sum; // Загальна сума витрат
       }
     }
   });
@@ -76,7 +84,7 @@ export const getStatisticsService = async (userId, month, year) => {
     data: {
       income,
       totalExpenses,
-      expenses
-    }
+      expenses,
+    },
   };
 };
