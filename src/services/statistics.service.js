@@ -1,19 +1,20 @@
+import { categories } from '../constants/index.js';
 import { Transaction } from '../models/Transaction.js';
 import createHttpError from 'http-errors';
 
 // Список категорій витрат
-const expenseCategories = [
-  'Main expenses',
-  'Products',
-  'Car',
-  'Self care',
-  'Child care',
-  'Household products',
-  'Education',
-  'Leisure',
-  'Other expenses',
-  'Entertainment',
-];
+// const expenseCategories = [
+//   'Main expenses',
+//   'Products',
+//   'Car',
+//   'Self care',
+//   'Child care',
+//   'Household products',
+//   'Education',
+//   'Leisure',
+//   'Other expenses',
+//   'Entertainment',
+// ];
 
 // Отримати статистику витрат і надходжень
 export const getStatisticsService = async (userId, month, year) => {
@@ -67,7 +68,7 @@ export const getStatisticsService = async (userId, month, year) => {
     if (transaction.type === 'income') {
       income += transaction.sum;
     } else if (transaction.type === 'expense') {
-      if (expenseCategories.includes(transaction.categoryId)) {
+      if (categories.includes(transaction.categoryId)) {
         if (!expenses[transaction.categoryId]) {
           expenses[transaction.categoryId] = 0;
         }
