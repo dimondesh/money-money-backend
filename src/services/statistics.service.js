@@ -1,13 +1,7 @@
+import { categories } from '../constants/index.js';
 import { Transaction } from '../models/Transaction.js';
 import createHttpError from 'http-errors';
 
-// Список категорій витрат
-const expenseCategories = [
-  "Main expenses", "Products", "Car", "Self care", "Child care",
-  "Household products", "Education", "Leisure", "Other expenses", "Entertainment"
-];
-
-// Отримати статистику витрат і надходжень
 export const getStatisticsService = async (userId, month, year) => {
   if (!month || !year || isNaN(month) || isNaN(year)) {
     throw createHttpError(400, 'Invalid month or year format');
@@ -25,7 +19,6 @@ export const getStatisticsService = async (userId, month, year) => {
     throw createHttpError(400, 'Year must be between 1900 and current year');
   }
 
-  // Дата початку та кінця місяця
   const startDate = new Date(Date.UTC(year, month - 1, 1));
   const endDate = new Date(Date.UTC(year, month, 1));
 
@@ -35,7 +28,7 @@ export const getStatisticsService = async (userId, month, year) => {
 
   const transactions = await Transaction.find({
     userId,
-    date: { $gte: startDate, $lt: endDate }
+    date: { $gte: startDate, $lt: endDate },
   });
 
   if (!transactions || transactions.length === 0) {
@@ -44,26 +37,25 @@ export const getStatisticsService = async (userId, month, year) => {
 
   let income = 0;
   let totalExpenses = 0;
-  const expensesMap = {};
 
-  // Ініціалізація всіх категорій нулем
-  for (const category of expenseCategories) {
-    expensesMap[category] = 0;
+  const expenseCategories = categories.filter((c) => c.type === 'expense');
+  const expenseMap = {};
+
+  // Ініціалізуємо map з назвами категорій
+  for (const cat of expenseCategories) {
+    expenseMap[cat.id] = { category: cat.name, total: 0 };
   }
 
   for (const tx of transactions) {
     if (tx.type === 'income') {
       income += tx.sum;
-    } else if (tx.type === 'expense' && expenseCategories.includes(tx.category)) {
-      expensesMap[tx.category] += tx.sum;
+    } else if (tx.type === 'expense' && expenseMap[tx.categoryId]) {
+      expenseMap[tx.categoryId].total += tx.sum;
       totalExpenses += tx.sum;
     }
   }
 
-  const expensesArray = Object.entries(expensesMap).map(([category, total]) => ({
-    category,
-    total
-  }));
+  const expenses = Object.values(expenseMap);
 
   return {
     status: 'success',
@@ -72,7 +64,7 @@ export const getStatisticsService = async (userId, month, year) => {
     data: {
       income,
       totalExpenses,
-      expenses: expensesArray
-    }
+      expenses,
+    },
   };
 };
