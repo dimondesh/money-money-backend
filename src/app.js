@@ -34,9 +34,7 @@ app.use(
 
 app.use(
   cors({
-    // Используем переменную из .env или ваш порт Vite по умолчанию
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    // credentials: true оставляем, если используете cookie для сессий
+    origin: ['http://localhost:5173', 'https://money-money-rouge.vercel.app'],
     credentials: true,
   }),
 );
