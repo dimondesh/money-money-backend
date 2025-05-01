@@ -3,13 +3,13 @@ import createHttpError from 'http-errors';
 
 // Створити транзакцію
 export const createTransactionService = async (req) => {
-  const userId = req.userId; 
-  const { type, category, sum, comment } = req.body;
+  const userId = req.userId;
+  const { type, categoryId, sum, comment } = req.body;
 
   const newTransaction = await Transaction.create({
     userId,
     type,
-    category,
+    categoryId,
     sum,
     comment,
   });
@@ -19,7 +19,7 @@ export const createTransactionService = async (req) => {
 
 // Отримати всі транзакції користувача
 export const getAllTransactionsService = async (req) => {
-  const userId = req.userId; 
+  const userId = req.userId;
   const transactions = await Transaction.find({ userId }).sort({
     createdAt: -1,
   });
@@ -29,7 +29,7 @@ export const getAllTransactionsService = async (req) => {
 
 // Отримати одну транзакцію по ID
 export const getTransactionByIdService = async (req) => {
-  const userId = req.userId; 
+  const userId = req.userId;
   const { id } = req.params;
 
   const transaction = await Transaction.findOne({ _id: id, userId });
@@ -40,7 +40,7 @@ export const getTransactionByIdService = async (req) => {
 
 // Оновити транзакцію
 export const updateTransactionService = async (req) => {
-  const userId = req.userId; 
+  const userId = req.userId;
   const { id } = req.params;
   const updates = req.body;
 
@@ -58,7 +58,7 @@ export const updateTransactionService = async (req) => {
 
 // Видалити транзакцію
 export const deleteTransactionService = async (req) => {
-  const userId = req.userId; 
+  const userId = req.userId;
   const { id } = req.params;
 
   const deletedTransaction = await Transaction.findOneAndDelete({
