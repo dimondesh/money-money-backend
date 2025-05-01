@@ -52,7 +52,7 @@ export const getStatisticsService = async (userId, month, year) => {
 
   let income = 0;
   let totalExpenses = 0;
-  let expenses = {};
+  let expenses = [];
 
   // Обчислюємо суму доходів і витрат по категоріях
   transactions.forEach(transaction => {
