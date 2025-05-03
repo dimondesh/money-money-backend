@@ -1,6 +1,6 @@
 import { Transaction } from '../models/Transaction.js';
 import createHttpError from 'http-errors';
-
+import { addUserBalance, subtractUserBalance } from '../utils/updateUserBalance.js';
 // Створити транзакцію
 export const createTransactionService = async (req) => {
   const userId = req.userId;
@@ -13,7 +13,12 @@ export const createTransactionService = async (req) => {
     sum,
     comment,
   });
-
+if (newTransaction.type === 'income') {
+    await addUserBalance(userId, newTransaction.sum);
+  }
+  if (newTransaction.type === 'expense') {
+    await subtractUserBalance(userId, newTransaction.sum);
+  }
   return newTransaction;
 };
 
