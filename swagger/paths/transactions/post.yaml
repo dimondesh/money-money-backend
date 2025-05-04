@@ -15,19 +15,19 @@ requestBody:
             type: string
             enum: [income, expense]
             description: Type of the transaction (income or expense)
-            example: 'EXPENSE'
+            example: 'expense'
           _id:
             type: string
             example: 'c143130f-7d1e-4011-90a4-54766d4e308e'
           sum:
             type: number
             format: float
-            description: Transaction amount (must be non-negative)
-            example: 25.50
+            description: Transaction sum (must not be negative)
+            example: 100.00
           date:
             type: string
             format: date-time
-            example: '2025-04-26T10:00:00Z'
+            example: '2025-04-29T09:00:00Z'
           comment:
             type: string
             example: 'Lunch at a cafe'
