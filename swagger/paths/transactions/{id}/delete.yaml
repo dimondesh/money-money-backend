@@ -15,6 +15,6 @@ responses:
   '204':
     description: Transaction deleted successfully (No Content)
   '401':
-    description: '../../components/responses/401.yaml'
+    description: '../../../components/responses/401.yaml'
   '404':
-    description: '../../components/responses/404.yaml'
+    description: '../../../components/responses/404.yaml'

@@ -714,7 +714,7 @@
             "$ref": "#/components/responses/ValidationError"
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "description": "../../../components/responses/401.yaml"
           },
           "404": {
             "description": "../../../components/responses/404.yaml"
@@ -748,10 +748,10 @@
             "description": "Transaction deleted successfully (No Content)"
           },
           "401": {
-            "description": "../../components/responses/401.yaml"
+            "description": "../../../components/responses/401.yaml"
           },
           "404": {
-            "description": "../../components/responses/404.yaml"
+            "description": "../../../components/responses/404.yaml"
           }
         }
       }
