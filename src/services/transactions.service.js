@@ -3,19 +3,14 @@ import createHttpError from 'http-errors';
 import { addUserBalance, subtractUserBalance } from '../utils/updateUserBalance.js';
 import User from '../models/User.js';
 
-
-
 // Створити транзакцію
-
-
-
 export const createTransactionService = async (req) => {
   const userId = req.userId;
   const { type, categoryId, sum, comment } = req.body;
 
-  // Перевіряємо баланс перед створенням витрати
   if (type === 'expense') {
     const user = await User.findById(userId);
+    if (!user) throw createHttpError.NotFound('User not found');
     if (user.balance - sum < 0) {
       throw createHttpError.BadRequest('Balance cannot be negative');
     }
@@ -31,35 +26,20 @@ export const createTransactionService = async (req) => {
 
   if (type === 'income') {
     await addUserBalance(userId, sum);
-  } else if (type === 'expense') {
+  } else {
     await subtractUserBalance(userId, sum);
   }
 
   return newTransaction;
 };
 
-
-
 // Отримати всі транзакції користувача
-
-
 export const getAllTransactionsService = async (req) => {
   const userId = req.userId;
-  const transactions = await Transaction.find({ userId }).sort({
-    createdAt: -1,
-  });
-
-  return transactions;
+  return await Transaction.find({ userId }).sort({ createdAt: -1 });
 };
 
-
-
-
-
-
-// Отримати одну транзакцію по ID
-
-
+// Отримати одну транзакцію
 export const getTransactionByIdService = async (req) => {
   const userId = req.userId;
   const { id } = req.params;
@@ -70,76 +50,76 @@ export const getTransactionByIdService = async (req) => {
   return transaction;
 };
 
-
-
-
 // Оновити транзакцію
 export const updateTransactionService = async (req) => {
   const userId = req.userId;
   const { id } = req.params;
   const updates = req.body;
 
-  const oldTransaction = await Transaction.findOne({ _id: id, userId });
-  if (!oldTransaction) throw createHttpError.NotFound('Transaction not found');
+  const old = await Transaction.findOne({ _id: id, userId });
+  if (!old) throw createHttpError.NotFound('Transaction not found');
 
- 
-  if (oldTransaction.type === 'income') {
-    await subtractUserBalance(userId, oldTransaction.sum);
-  } else if (oldTransaction.type === 'expense') {
-    await addUserBalance(userId, oldTransaction.sum);
+  const oldSum = old.sum;
+  const oldType = old.type;
+
+  const newSum = updates.sum !== undefined ? updates.sum : old.sum;
+  const newType = updates.type || old.type;
+
+  
+  if (oldType === 'income') {
+    await subtractUserBalance(userId, oldSum);
+  } else {
+    await addUserBalance(userId, oldSum);
   }
 
-
-  if (updates.type === 'expense') {
+  if (newType === 'expense') {
     const user = await User.findById(userId);
-    if (user.balance - updates.sum < 0) {
-   
-      if (oldTransaction.type === 'income') {
-        await addUserBalance(userId, oldTransaction.sum);
-      } else if (oldTransaction.type === 'expense') {
-        await subtractUserBalance(userId, oldTransaction.sum);
+    if (!user) throw createHttpError.NotFound('User not found');
+    if (user.balance - newSum < 0) {
+     
+      if (oldType === 'income') {
+        await addUserBalance(userId, oldSum);
+      } else {
+        await subtractUserBalance(userId, oldSum);
       }
       throw createHttpError.BadRequest('Balance cannot be negative');
     }
   }
 
-  const updatedTransaction = await Transaction.findOneAndUpdate(
+  const updated = await Transaction.findOneAndUpdate(
     { _id: id, userId },
     updates,
     { new: true }
   );
+  if (!updated) throw createHttpError.NotFound('Transaction not found');
 
-  if (!updatedTransaction) throw createHttpError.NotFound('Transaction not found');
 
- 
-  if (updatedTransaction.type === 'income') {
-    await addUserBalance(userId, updatedTransaction.sum);
-  } else if (updatedTransaction.type === 'expense') {
-    await subtractUserBalance(userId, updatedTransaction.sum);
+  if (newType === 'income') {
+    await addUserBalance(userId, newSum);
+  } else {
+    await subtractUserBalance(userId, newSum);
   }
 
-  return updatedTransaction;
+  return updated;
 };
-
-
 
 // Видалити транзакцію
 export const deleteTransactionService = async (req) => {
   const userId = req.userId;
   const { id } = req.params;
 
-  const deletedTransaction = await Transaction.findOneAndDelete({
-    _id: id,
-    userId,
-  });
+  const transaction = await Transaction.findOne({ _id: id, userId });
+  if (!transaction) throw createHttpError.NotFound('Transaction not found');
 
-  if (!deletedTransaction) throw createHttpError.NotFound('Transaction not found');
-
-  if (deletedTransaction.type === 'income') {
-    await subtractUserBalance(userId, deletedTransaction.sum);
-  } else if (deletedTransaction.type === 'expense') {
-    await addUserBalance(userId, deletedTransaction.sum);
+ 
+  if (transaction.type === 'income') {
+    await subtractUserBalance(userId, transaction.sum);
+  } else if (transaction.type === 'expense') {
+    await addUserBalance(userId, transaction.sum);
   }
+
+ 
+  await Transaction.deleteOne({ _id: id, userId });
 
   return { message: 'Transaction deleted successfully' };
 };

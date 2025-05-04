@@ -7,6 +7,9 @@ export const addUserBalance = async (userId, amount) => {
 
 export const subtractUserBalance = async (userId, amount) => {
   const user = await User.findById(userId);
+  await User.findByIdAndUpdate(userId, { $inc: { balance: -amount } });
+  
+
   if (!user) throw createHttpError.NotFound('Користувача не знайдено');
 
   if (user.balance - amount < 0) {
