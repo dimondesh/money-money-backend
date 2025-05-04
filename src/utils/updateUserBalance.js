@@ -12,10 +12,7 @@ export const subtractUserBalance = async (userId, amount) => {
 
   if (!user) throw createHttpError.NotFound('Користувача не знайдено');
 
-  if (user.balance - amount < 0) {
-    throw createHttpError.BadRequest('Недостатньо коштів для цієї витрати');
-  }
-
+ 
   user.balance -= amount;
   await user.save();
 };

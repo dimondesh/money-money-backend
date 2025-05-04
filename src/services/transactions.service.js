@@ -11,9 +11,7 @@ export const createTransactionService = async (req) => {
   if (type === 'expense') {
     const user = await User.findById(userId);
     if (!user) throw createHttpError.NotFound('User not found');
-    if (user.balance - sum < 0) {
-      throw createHttpError.BadRequest('Balance cannot be negative');
-    }
+   
   }
 
   const newTransaction = await Transaction.create({
@@ -82,7 +80,7 @@ export const updateTransactionService = async (req) => {
       } else {
         await subtractUserBalance(userId, oldSum);
       }
-      throw createHttpError.BadRequest('Balance cannot be negative');
+      
     }
   }
 
