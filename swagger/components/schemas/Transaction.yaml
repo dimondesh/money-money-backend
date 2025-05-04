@@ -10,9 +10,9 @@ properties:
     type: string
     enum: [income, expense]
     example: 'expense'
-  category:
+  categoryId:
     type: string
-    example: 'food'
+    example: '664fb8d7a43d13e0123a4567'
   sum:
     type: number
     example: 250
@@ -31,7 +31,7 @@ required:
   - _id
   - userId
   - type
-  - category
+  - categoryId
   - sum
   - createdAt
   - updatedAt

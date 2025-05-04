@@ -1,6 +1,6 @@
 tags:
   - Summary
-summary: Get financial summary for a specific month and year
+summary: Retrieve financial summary for a specific month and year
 security:
   - bearerAuth: []
 parameters:
@@ -21,7 +21,7 @@ parameters:
     description: Year in YYYY format
 responses:
   '200':
-    description: Summary data retrieved successfully
+    description: Successfully retrieved summary data
     content:
       application/json:
         schema:
@@ -29,20 +29,25 @@ responses:
           properties:
             totalIncome:
               type: number
+              description: Total income for the specified period
               example: 2500.50
             totalExpense:
               type: number
+              description: Total expense for the specified period
               example: 1432.75
             categories:
               type: array
+              description: Summary of expenses categorized by type
               items:
                 type: object
                 properties:
                   category:
                     type: string
-                    example: "Products"
-                  amount:
+                    description: Name of the category
+                    example: 'Products'
+                  total:
                     type: number
+                    description: Total amount for the category
                     example: 300.00
   '400':
     $ref: '../../components/responses/ValidationError.yaml'
