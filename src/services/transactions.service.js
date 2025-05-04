@@ -107,7 +107,9 @@ export const deleteTransactionService = async (req) => {
   const { id } = req.params;
 
   const transaction = await Transaction.findOne({ _id: id, userId });
-  if (!transaction) throw createHttpError.NotFound('Transaction not found');
+  if (!transaction) {
+    return createHttpError.NotFound('Transaction not found');
+  }
 
  
   if (transaction.type === 'income') {
