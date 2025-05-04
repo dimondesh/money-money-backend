@@ -14,6 +14,6 @@ responses:
           items:
             $ref: '../../components/schemas/Transaction.yaml'
   '401':
-    description: '../../components/responses/401.yaml'
+    $ref: '../../components/responses/401.yaml'
   '500':
-    description: '../../components/responses/500.yaml'
+    $ref: '../../components/responses/500.yaml'
