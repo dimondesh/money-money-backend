@@ -46,8 +46,8 @@ export async function loginUser(email, password) {
     userId: user._id,
     accessToken: crypto.randomBytes(30).toString("base64"),
     refreshToken: crypto.randomBytes(30).toString("base64"),
-    accessTokenValidUntil: new Date(Date.now() + 60 * 1000),
-    refreshTokenValidUntil: new Date(Date.now() + 120 * 1000),
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
   });
 
   return newSession;
@@ -82,7 +82,7 @@ export async function refreshSession(sessionId, refreshToken) {
     userId: currentSession.userId,
     accessToken: crypto.randomBytes(30).toString("base64"),
     refreshToken: crypto.randomBytes(30).toString("base64"),
-    accessTokenValidUntil: new Date(Date.now() + 60 * 1000),
-    refreshTokenValidUntil: new Date(Date.now() + 120 * 1000),
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
   });
 }
