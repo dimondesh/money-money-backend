@@ -2,6 +2,7 @@ import {
   loginUser,
   registerUser,
   logoutUser,
+  refreshSession,
 } from '../services/auth.service.js';
 
 export async function registerController(req, res) {
@@ -45,4 +46,36 @@ export async function logoutController(req, res) {
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
   res.status(204).end();
+}
+
+
+export async function refreshController(req, res) {
+  const { sessionId, refreshToken } = req.cookies;
+  const session = await refreshSession(sessionId, refreshToken);
+
+  if (session.accessTokenValidUntil < new Date()) {
+    res.clearCookie("sessionId");
+    res.clearCookie("refreshToken");
+    return res.status(401).json({
+      status: 401,
+      message: "Session expired",
+    });
+  }
+  
+  res.cookie("sessionId", session._id, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+  res.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+  
+  res.status(200).json({
+    status: 200,
+    message: "Session refreshed successfully",
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
 }
