@@ -1,17 +1,19 @@
 import { Transaction } from '../models/Transaction.js';
 import createHttpError from 'http-errors';
-import { addUserBalance, subtractUserBalance } from '../utils/updateUserBalance.js';
+import {
+  addUserBalance,
+  subtractUserBalance,
+} from '../utils/updateUserBalance.js';
 import User from '../models/User.js';
 
 // Створити транзакцію
 export const createTransactionService = async (req) => {
   const userId = req.userId;
-  const { type, categoryId, sum, comment } = req.body;
+  const { type, categoryId, sum, comment, date } = req.body;
 
   if (type === 'expense') {
     const user = await User.findById(userId);
     if (!user) throw createHttpError.NotFound('User not found');
-   
   }
 
   const newTransaction = await Transaction.create({
@@ -20,6 +22,7 @@ export const createTransactionService = async (req) => {
     categoryId,
     sum,
     comment,
+    date,
   });
 
   if (type === 'income') {
@@ -63,7 +66,6 @@ export const updateTransactionService = async (req) => {
   const newSum = updates.sum !== undefined ? updates.sum : old.sum;
   const newType = updates.type || old.type;
 
-  
   if (oldType === 'income') {
     await subtractUserBalance(userId, oldSum);
   } else {
@@ -74,23 +76,20 @@ export const updateTransactionService = async (req) => {
     const user = await User.findById(userId);
     if (!user) throw createHttpError.NotFound('User not found');
     if (user.balance - newSum < 0) {
-     
       if (oldType === 'income') {
         await addUserBalance(userId, oldSum);
       } else {
         await subtractUserBalance(userId, oldSum);
       }
-      
     }
   }
 
   const updated = await Transaction.findOneAndUpdate(
     { _id: id, userId },
     updates,
-    { new: true }
+    { new: true },
   );
   if (!updated) throw createHttpError.NotFound('Transaction not found');
-
 
   if (newType === 'income') {
     await addUserBalance(userId, newSum);
@@ -111,14 +110,12 @@ export const deleteTransactionService = async (req) => {
     return createHttpError.NotFound('Transaction not found');
   }
 
- 
   if (transaction.type === 'income') {
     await subtractUserBalance(userId, transaction.sum);
   } else if (transaction.type === 'expense') {
     await addUserBalance(userId, transaction.sum);
   }
 
- 
   await Transaction.deleteOne({ _id: id, userId });
 
   return { message: 'Transaction deleted successfully' };

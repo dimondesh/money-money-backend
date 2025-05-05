@@ -11,7 +11,7 @@ const transactionSchema = new mongoose.Schema(
     categoryId: { type: String },
     sum: { type: Number, required: true },
     comment: { type: String, default: '' },
-    date: { type: Date, default: Date.now },
+    date: { type: Date },
   },
   { timestamps: true, versionKey: false },
 );
