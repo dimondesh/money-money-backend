@@ -31,6 +31,12 @@ const auth = async (req, res, next) => {
   
     req.userId = session.userId;
 
+    if (session.accessTokenValidUntil < new Date()) {
+      console.log("Access token expired at:", session.accessTokenValidUntil);
+      return next(createHttpError(401, 'Access token expired'));
+    }
+    
+
     next();
   } catch (err) {
     console.error('Error during Base64 token auth:', err);
