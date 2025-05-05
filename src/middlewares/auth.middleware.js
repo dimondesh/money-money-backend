@@ -1,5 +1,3 @@
-// middlewares/auth.middleware.js
-
 import createHttpError from 'http-errors';
 import { SessionsCollection } from '../models/session.js';
 
@@ -17,7 +15,6 @@ const auth = async (req, res, next) => {
   }
 
   try {
-   
     const session = await SessionsCollection.findOne({ accessToken: token });
 
     if (!session) {
@@ -28,19 +25,11 @@ const auth = async (req, res, next) => {
       return next(createHttpError(401, 'Access token expired'));
     }
 
-  
     req.userId = session.userId;
-
-    if (session.accessTokenValidUntil < new Date()) {
-      console.log("Access token expired at:", session.accessTokenValidUntil);
-      return next(createHttpError(401, 'Access token expired'));
-    }
-    
-
     next();
   } catch (err) {
-    console.error('Error during Base64 token auth:', err);
-    return next(createHttpError(500, 'Internal server error during token validation'));
+    console.error('Auth middleware error:', err);
+    return next(createHttpError(500, 'Internal server error'));
   }
 };
 
