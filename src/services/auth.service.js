@@ -1,18 +1,18 @@
-// В файле: src/services/auth.service.js
+
 
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken';
+
 import { SessionsCollection } from "../models/session.js";
 import User from "../models/User.js";
-// import crypto from "node:crypto"; // Не используется
+import crypto from "node:crypto"; 
 
 // Импортируем константы, добавляя .js в конце пути
 import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js'; // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
 
 // eslint-disable-next-line no-unused-vars
 import dotenv from 'dotenv';
-// Вызов dotenv.config() лучше оставить только в точке входа (server.js/app.js)
+
 // dotenv.config({ path: './.env' });
 
 export async function registerUser(payload) {
@@ -38,33 +38,16 @@ export async function loginUser(email, password) {
     throw createHttpError.Unauthorized("Invalid login or password");
   }
 
-  const payload = { userId: user._id };
-
-  if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET is not defined in .env');
-  }
-  const refreshSecret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
-
-  const accessToken = jwt.sign(
-    payload,
-    process.env.JWT_SECRET,
-    { expiresIn: '15m' }
-  );
-
-  const refreshToken = jwt.sign(
-    payload,
-    refreshSecret,
-    { expiresIn: '7d' }
-  );
+  
 
   await SessionsCollection.deleteOne({ userId: user._id });
 
   const newSession = await SessionsCollection.create({
     userId: user._id,
-    accessToken: accessToken,
-    refreshToken: refreshToken,
+    accessToken: crypto.randomBytes(30).toString("base64"),
+    refreshToken: crypto.randomBytes(30).toString("base64"),
     accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY * 7),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
   });
 
   return newSession;
@@ -76,4 +59,30 @@ export async function logoutUser(sessionId, refreshToken) {
     throw createHttpError.Unauthorized("Invalid session or refresh token");
   }
   return undefined;
+}
+
+
+export async function refreshSession(sessionId, refreshToken) {
+
+  const currentSession = await SessionsCollection.findOne({ _id: sessionId, refreshToken });
+ 
+  if (!currentSession) {
+    
+    throw createHttpError.Unauthorized("Session not found");
+  }
+  if (currentSession.refreshTokenValidUntil < new Date()) {
+    logoutUser(sessionId, refreshToken);
+    throw createHttpError.Unauthorized("Session expired");
+  }
+
+  await SessionsCollection.deleteOne({ _id: currentSession._id, refreshToken: currentSession.refreshToken });
+
+
+  return SessionsCollection.create({
+    userId: currentSession.userId,
+    accessToken: crypto.randomBytes(30).toString("base64"),
+    refreshToken: crypto.randomBytes(30).toString("base64"),
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
+  });
 }
