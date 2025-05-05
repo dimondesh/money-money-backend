@@ -25,8 +25,8 @@ responses:
         schema:
           $ref: '../../../components/schemas/Transaction.yaml'
   '400':
-    $ref: '../../../components/responses/ValidationError.yaml'
+    $ref: ../../../components/responses/ValidationError.yaml
   '401':
-    description: Unauthorized – missing or invalid token
+    $ref: '../../../components/responses/401.yaml'
   '404':
-    description: '../../../components/responses/404.yaml'
+    $ref: '../../../components/responses/404.yaml'
