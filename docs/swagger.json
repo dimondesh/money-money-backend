@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "https://money-money-backend.onrender.com"
     }
   ],
   "security": [
@@ -284,10 +284,11 @@
     "/user": {
       "get": {
         "tags": [
-          "User"
+          "Users"
         ],
-        "summary": "Get current user",
-        "description": "Returns public information about the currently authenticated user.",
+        "summary": "Get current user information",
+        "operationId": "getCurrentUser",
+        "description": "Returns the currently authenticated user's information.",
         "security": [
           {
             "bearerAuth": []
@@ -295,20 +296,92 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully retrieved user data",
+            "description": "Successfully retrieved current user",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User info retrieved"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "_id",
+                        "name",
+                        "email",
+                        "balance",
+                        "createdAt",
+                        "updatedAt"
+                      ],
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "680a48766576acjd74a4f2e"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Alexander"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "test@gmail.com"
+                        },
+                        "balance": {
+                          "type": "number",
+                          "example": 0
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-03-25T18:19:58.211Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-03-25T18:30:39.453Z"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
-          },
-          "500": {
-            "description": "Server error"
+            "description": "Unauthorized - Invalid or missing token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid token"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -318,7 +391,9 @@
         "tags": [
           "Categories"
         ],
-        "summary": "Get list of income and expense categories",
+        "summary": "Get list of transaction categories",
+        "description": "Retrieve a list of transaction categories available for users.",
+        "operationId": "getCategoriesService",
         "security": [
           {
             "bearerAuth": []
@@ -326,21 +401,114 @@
         ],
         "responses": {
           "200": {
-            "description": "Categories retrieved successfully",
+            "description": "A list of transaction categories available for users",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "example": "Products"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Categories retrieved",
+                      "description": "Response message"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "List of transaction categories",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the transaction category"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "expense",
+                              "income"
+                            ],
+                            "description": "Type of the transaction category (either expense or income)"
+                          }
+                        }
+                      }
+                    }
                   }
+                },
+                "example": {
+                  "status": 200,
+                  "message": "Categories retrieved",
+                  "data": [
+                    {
+                      "id": "da8d0a6d-60c9-4cc5-be1e-34680e6a181d",
+                      "name": "Main expenses",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "677d8aac-12a3-467c-8c1c-5493bae43996",
+                      "name": "Products",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "89707abe-6aec-45d5-a10c-3d8ddf1b6851",
+                      "name": "Car",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "d12ba90e-10ae-4862-a9bb-ff4dcb09c177",
+                      "name": "Self care",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "b9b1159e-d14b-4f50-a500-f937af5b2438",
+                      "name": "Child care",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "a5b7487c-d5c9-4099-9266-ca2fe93a796e",
+                      "name": "Household products",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "9c4c46b1-7687-40f2-8923-a98903b24062",
+                      "name": "Leisure",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "b580ddd9-ae63-4258-b860-e4fa2b8fa25a",
+                      "name": "Other expenses",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "3acd0ecd-5295-4d54-8e7c-d3908f4d0402",
+                      "name": "Entertainment",
+                      "type": "expense"
+                    },
+                    {
+                      "id": "063f1132-ba5d-42b4-951d-44011ca46262",
+                      "name": "Income",
+                      "type": "income"
+                    }
+                  ]
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -371,7 +539,7 @@
                       "expense"
                     ],
                     "description": "Type of the transaction (income or expense)",
-                    "example": "EXPENSE"
+                    "example": "expense"
                   },
                   "_id": {
                     "type": "string",
@@ -380,13 +548,13 @@
                   "sum": {
                     "type": "number",
                     "format": "float",
-                    "description": "Transaction amount (must be non-negative)",
-                    "example": 25.5
+                    "description": "Transaction sum (must not be negative)",
+                    "example": 100
                   },
                   "date": {
                     "type": "string",
                     "format": "date-time",
-                    "example": "2025-04-26T10:00:00Z"
+                    "example": "2025-04-29T09:00:00Z"
                   },
                   "comment": {
                     "type": "string",
@@ -419,7 +587,7 @@
             "$ref": "#/components/responses/ValidationError"
           },
           "401": {
-            "description": "../../components/responses/401.yaml"
+            "$ref": "#/components/responses/401"
           }
         }
       },
@@ -449,10 +617,10 @@
             }
           },
           "401": {
-            "description": "../../components/responses/401.yaml"
+            "$ref": "#/components/responses/401"
           },
           "500": {
-            "description": "../../components/responses/500.yaml"
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -492,10 +660,10 @@
             }
           },
           "401": {
-            "description": "../../../components/responses/401.yaml"
+            "$ref": "#/components/responses/401"
           },
           "404": {
-            "description": "../../../components/responses/404.yaml"
+            "$ref": "#/components/responses/404"
           }
         }
       },
@@ -546,10 +714,10 @@
             "$ref": "#/components/responses/ValidationError"
           },
           "401": {
-            "description": "Unauthorized – missing or invalid token"
+            "$ref": "#/components/responses/401"
           },
           "404": {
-            "description": "../../../components/responses/404.yaml"
+            "$ref": "#/components/responses/404"
           }
         }
       },
@@ -580,10 +748,10 @@
             "description": "Transaction deleted successfully (No Content)"
           },
           "401": {
-            "description": "../../components/responses/401.yaml"
+            "$ref": "#/components/responses/401"
           },
           "404": {
-            "description": "../../components/responses/404.yaml"
+            "$ref": "#/components/responses/404"
           }
         }
       }
@@ -593,7 +761,7 @@
         "tags": [
           "Summary"
         ],
-        "summary": "Get financial summary for a specific month and year",
+        "summary": "Retrieve financial summary for a specific month and year",
         "security": [
           {
             "bearerAuth": []
@@ -624,7 +792,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Summary data retrieved successfully",
+            "description": "Successfully retrieved summary data",
             "content": {
               "application/json": {
                 "schema": {
@@ -632,23 +800,28 @@
                   "properties": {
                     "totalIncome": {
                       "type": "number",
+                      "description": "Total income for the specified period",
                       "example": 2500.5
                     },
                     "totalExpense": {
                       "type": "number",
+                      "description": "Total expense for the specified period",
                       "example": 1432.75
                     },
                     "categories": {
                       "type": "array",
+                      "description": "Summary of expenses categorized by type",
                       "items": {
                         "type": "object",
                         "properties": {
                           "category": {
                             "type": "string",
+                            "description": "Name of the category",
                             "example": "Products"
                           },
-                          "amount": {
+                          "total": {
                             "type": "number",
+                            "description": "Total amount for the category",
                             "example": 300
                           }
                         }
@@ -708,10 +881,6 @@
             "minLength": 6,
             "maxLength": 12,
             "example": "StepDake123"
-          },
-          "balance": {
-            "type": "number",
-            "default": "0,"
           }
         }
       },
@@ -762,9 +931,9 @@
             ],
             "example": "expense"
           },
-          "category": {
+          "categoryId": {
             "type": "string",
-            "example": "food"
+            "example": "664fb8d7a43d13e0123a4567"
           },
           "sum": {
             "type": "number",
@@ -789,7 +958,7 @@
           "_id",
           "userId",
           "type",
-          "category",
+          "categoryId",
           "sum",
           "createdAt",
           "updatedAt"
@@ -926,4 +1095,4 @@
       }
     }
   }
-}
+}

@@ -23,6 +23,3 @@ properties:
     minLength: 6
     maxLength: 12
     example: StepDake123
-  balance:
-    type: number
-    default: 0,
