@@ -40,6 +40,16 @@ app.use(
 );
 
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.cookie('example', 'value', {
+    httpOnly: true,
+    secure: true, // This requires HTTPS
+    sameSite: 'None', // Important for cross-site cookies
+  });
+  next();
+});
+
 app.use(express.json());
 
 app.use('/api', router);
