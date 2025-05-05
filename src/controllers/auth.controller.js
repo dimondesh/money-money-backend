@@ -15,27 +15,7 @@ export async function registerController(req, res) {
   });
 }
 
-export async function loginController(req, res) {
-  const session = await loginUser(req.body.email, req.body.password);
 
-  res.cookie('sessionId', session._id, {
-    httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-  });
-
-  res.cookie('refreshToken', session.refreshToken, {
-    httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-  });
-
-  res.status(200).json({
-    status: 200,
-    message: 'User logged in successfully',
-    data: {
-      accessToken: session.accessToken,
-    },
-  });
-}
 
 export async function logoutController(req, res) {
   const { sessionId, refreshToken } = req.cookies;
@@ -49,28 +29,43 @@ export async function logoutController(req, res) {
 }
 
 
+export async function loginController(req, res) {
+  const session = await loginUser(req.body.email, req.body.password);
+
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: true,
+    expires: session.refreshTokenValidUntil, // <-- исправлено
+  });
+
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUntil, // <-- исправлено
+  });
+
+  res.status(200).json({
+    status: 200,
+    message: 'User logged in successfully',
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
+}
+
 export async function refreshController(req, res) {
   const { sessionId, refreshToken } = req.cookies;
   const session = await refreshSession(sessionId, refreshToken);
 
-  if (session.accessTokenValidUntil < new Date()) {
-    res.clearCookie("sessionId");
-    res.clearCookie("refreshToken");
-    return res.status(401).json({
-      status: 401,
-      message: "Session expired",
-    });
-  }
-  
-  res.cookie("sessionId", session._id, {
+
+  res.cookie("sessionId", session._id.toString(), {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
+    expires: session.refreshTokenValidUntil,
   });
+
   res.cookie("refreshToken", session.refreshToken, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
+    expires: session.refreshTokenValidUntil,
   });
-  
+
   res.status(200).json({
     status: 200,
     message: "Session refreshed successfully",
@@ -79,3 +74,5 @@ export async function refreshController(req, res) {
     },
   });
 }
+
+
