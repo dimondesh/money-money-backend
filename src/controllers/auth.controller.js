@@ -52,7 +52,7 @@ export async function logoutController(req, res) {
 export async function loginController(req, res) {
   
   userPassword = req.body.password;
-if (userPassword.lenghth > ) {
+if (userPassword.lenghth > 24) {
     return res.status(400).json({
       status: 400,
       message: "Password is too long",
