@@ -6,6 +6,26 @@ import {
 } from '../services/auth.service.js';
 
 export async function registerController(req, res) {
+  
+  userPassword = req.body.password;
+if (userPassword.lenghth > 24) {
+    return res.status(400).json({
+      status: 400,
+      message: "Password is too long",
+      data: null,
+    });
+  }
+  if (userPassword.lenghth < 8) {
+    return res.status(400).json({
+      status: 400,
+      message: "Password is too short",
+      data: null,
+    });
+  }
+
+  
+  
+  
   const user = await registerUser(req.body);
 
   res.status(201).json({
@@ -30,6 +50,25 @@ export async function logoutController(req, res) {
 
 
 export async function loginController(req, res) {
+  
+  userPassword = req.body.password;
+if (userPassword.lenghth > ) {
+    return res.status(400).json({
+      status: 400,
+      message: "Password is too long",
+      data: null,
+    });
+  }
+  if (userPassword.lenghth < 8) {
+    return res.status(400).json({
+      status: 400,
+      message: "Password is too short",
+      data: null,
+    });
+  }
+
+  
+  
   const session = await loginUser(req.body.email, req.body.password);
 
   res.cookie('sessionId', session._id.toString(), {
@@ -54,21 +93,6 @@ export async function loginController(req, res) {
 export async function refreshController(req, res) {
   const { sessionId, refreshToken } = req.cookies;
   const session = await refreshSession(sessionId, refreshToken);
-userPassword = req.body.password;
-if (userPassword.lenghth > 24) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password is too long",
-      data: null,
-    });
-  }
-  if (userPassword.lenghth < 8) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password is too short",
-      data: null,
-    });
-  }
 
   res.cookie("sessionId", session._id.toString(), {
     httpOnly: true,
