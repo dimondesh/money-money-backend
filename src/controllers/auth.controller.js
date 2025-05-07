@@ -7,23 +7,7 @@ import {
 
 export async function registerController(req, res) {
   
-  userPassword = req.body.password;
-if (userPassword.lenghth > 24) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password is too long",
-      data: null,
-    });
-  }
-  if (userPassword.lenghth < 8) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password is too short",
-      data: null,
-    });
-  }
 
-  
   
   
   const user = await registerUser(req.body);
@@ -51,22 +35,7 @@ export async function logoutController(req, res) {
 
 export async function loginController(req, res) {
   
-  userPassword = req.body.password;
-if (userPassword.lenghth > 24) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password is too long",
-      data: null,
-    });
-  }
-  if (userPassword.lenghth < 8) {
-    return res.status(400).json({
-      status: 400,
-      message: "Password is too short",
-      data: null,
-    });
-  }
-
+ 
   
   
   const session = await loginUser(req.body.email, req.body.password);
