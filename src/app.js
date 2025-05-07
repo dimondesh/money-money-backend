@@ -34,7 +34,7 @@ app.use(
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://money-money-rouge.vercel.app'],
+    origin: ['http://localhost:5173', 'https://money-money-phi.vercel.app'],
     credentials: true,
   }),
 );
