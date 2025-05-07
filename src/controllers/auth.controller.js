@@ -54,7 +54,21 @@ export async function loginController(req, res) {
 export async function refreshController(req, res) {
   const { sessionId, refreshToken } = req.cookies;
   const session = await refreshSession(sessionId, refreshToken);
-
+userPassword = req.body.password;
+if (userPassword.lenghth > 24) {
+    return res.status(400).json({
+      status: 400,
+      message: "Password is too long",
+      data: null,
+    });
+  }
+  if (userPassword.lenghth < 8) {
+    return res.status(400).json({
+      status: 400,
+      message: "Password is too short",
+      data: null,
+    });
+  }
 
   res.cookie("sessionId", session._id.toString(), {
     httpOnly: true,
@@ -73,6 +87,7 @@ export async function refreshController(req, res) {
       accessToken: session.accessToken,
     },
   });
+  
 }
 
 
